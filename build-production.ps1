@@ -2,7 +2,7 @@
 # Creates a self-contained executable with all dependencies
 
 param(
-    [string]$OutputPath = "production-dist",
+    [string]$OutputPath = "/dist/vX",
     [switch]$SkipClean = $false,
     [switch]$Force = $false
 )

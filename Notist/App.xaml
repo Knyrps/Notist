@@ -1,0 +1,29 @@
+﻿<Application x:Class="Notist.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:tb="clr-namespace:H.NotifyIcon;assembly=H.NotifyIcon.Wpf"
+             xmlns:tray="clr-namespace:Notist.Components.Tray"
+             xmlns:notist="clr-namespace:Notist"
+             Startup="OnStartup"
+             ShutdownMode="OnExplicitShutdown">
+
+    <Application.Resources>
+        <!-- TaskbarIcon declared in App resources.
+             Click handlers are handled by the App class (App.xaml.cs) -->
+        <tb:TaskbarIcon x:Key="TrayIcon"
+                        ToolTipText="Notist is running"
+                        IconSource="pack://application:,,,/Resources/app.ico"
+                        MenuActivation="LeftOrRightClick"
+                        NoLeftClickDelay="True">
+
+                <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="_Show Overlay" Click="OnShowOverlay"/>
+                    <Separator />
+                    <MenuItem Header="Se_ttings" Click="OnOpenSettings"/>
+                    <MenuItem Header="E_xit" Click="OnExit"/>
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+        </tb:TaskbarIcon>
+    </Application.Resources>
+</Application>

@@ -1,0 +1,29 @@
+@import "./styles/themes";
+
+html,
+body,
+#app {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  margin: 0;
+  padding: 0;
+
+  >main {
+    flex-grow: 1;
+    background: transparent;
+  }
+}
+
+/* Ensure Radix portals render above everything */
+[data-radix-portal] {
+  z-index: 9999 !important;
+}
+
+/* Specific Radix select content layering */
+[data-radix-select-content] {
+  z-index: 10000 !important;
+  position: fixed !important;
+}

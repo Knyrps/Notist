@@ -39,6 +39,7 @@ defineEmits<{
 
 <style lang="scss" scoped>
 @import "./styles/settings";
+@import "./styles/variables";
 @import "@/styles/variables";
 
 // Radix Switch Styles
@@ -46,17 +47,17 @@ defineEmits<{
     all: unset;
     width: 48px;
     height: 26px;
-    background: rgba(0, 0, 0, 0.2);
+    background: $switch-background-inactive;
     border-radius: 13px;
     position: relative;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: $switch-shadow-light;
     transition: all 0.2s ease;
     cursor: pointer;
     margin-right: 0.75rem;
     display: inline-block;
 
     &:hover {
-        background: rgba(0, 0, 0, 0.25);
+        background: $switch-background-inactive-hover;
     }
 
     &:focus-visible {
@@ -78,9 +79,9 @@ defineEmits<{
     display: block;
     width: 22px;
     height: 22px;
-    background: white;
+    background: $switch-thumb-background;
     border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: $switch-shadow-medium;
     transition: transform 0.2s ease;
     transform: translateX(2px);
     position: absolute;
@@ -108,7 +109,7 @@ defineEmits<{
     }
 
     &:hover .setting-switch {
-        background: rgba(0, 0, 0, 0.3);
+        background: $switch-background-inactive-dark;
     }
 
     &:hover .setting-switch[data-state="checked"] {

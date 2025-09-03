@@ -61,6 +61,7 @@ function handleSliderChange(value: number[] | undefined) {
 
 <style lang="scss" scoped>
 @import "./styles/settings";
+@import "./styles/variables";
 @import "@/styles/variables";
 
 // Radix Slider Styles - Using :deep() for third-party component styling
@@ -97,7 +98,7 @@ function handleSliderChange(value: number[] | undefined) {
     display: block;
     width: 18px;
     height: 18px;
-    background: white;
+    background: $slider-thumb-background;
     border: 2px solid $color-accent-primary;
     border-radius: 50%;
     box-shadow: $shadow-light;

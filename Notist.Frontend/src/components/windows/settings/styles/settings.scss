@@ -30,6 +30,26 @@
     }
 }
 
+.settings-section {
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid $color-border-primary;
+
+    &:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    h3 {
+        margin: 0 0 1.75rem 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: $color-text-primary;
+        letter-spacing: -0.025em;
+    }
+}
+
 .setting-control {
     display: flex;
     align-items: center;

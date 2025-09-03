@@ -13,7 +13,7 @@
         </div>
         <div class="header__block header__block--right">
             <IconNav :icon="faGear" title="Settings" @click="openSettings" />
-            <DropdownIconNav
+            <QuitIconNav
                 :icon="faXmark"
                 title="Close Overlay"
                 @click="closeOverlay"
@@ -24,10 +24,10 @@
     </header>
 </template>
 <script setup lang="ts">
-import CollectionSelector from "./CollectionSelector.vue";
-import Nav from "./Nav.vue";
-import IconNav from "./IconNav.vue";
-import DropdownIconNav from "./DropdownIconNav.vue";
+import CollectionSelector from "@/components/header/CollectionSelector.vue";
+import Nav from "@/components/header/Nav.vue";
+import IconNav from "@/components/header/IconNav.vue";
+import QuitIconNav from "@/components/header/QuitIconNav.vue";
 import { faGear, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useWindowManager } from "@/lib/windowManager";
 import { AppService } from "@/lib/appService";
@@ -37,7 +37,7 @@ const { openWindow } = useWindowManager();
 const options = [
     {
         key: "work",
-        value: "Work Notesmsa ndhjasg dhjasgd jhgasgd jhasdf ashgdfs",
+        value: "Work Notes",
     },
     { key: "personal", value: "Personal" },
     { key: "projects", value: "Projects" },

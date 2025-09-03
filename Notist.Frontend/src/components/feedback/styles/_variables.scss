@@ -1,0 +1,32 @@
+// Import global variables first
+@import "@/styles/_variables";
+
+// Local SCSS variables for feedback components
+// Using base colors with adjusted opacity/darkness for consistency
+
+// Alert component colors by type - Error (Red variants)
+$alert-error-background: $color-error-light;
+$alert-error-border: $color-error;
+$alert-error-icon: $color-error;
+$alert-error-confirm-background: $color-error;
+$alert-error-confirm-text: white;
+$alert-error-confirm-hover: rgba(220, 53, 69, 0.85); // Darker variant of $color-error
+$alert-error-confirm-active: rgba(220, 53, 69, 0.75); // Even darker for active state
+
+// Alert component colors by type - Warning (Yellow/Orange variants)
+$alert-warning-background: $color-warning-light;
+$alert-warning-border: $color-warning;
+$alert-warning-icon: $color-warning;
+$alert-warning-confirm-background: $color-warning;
+$alert-warning-confirm-text: black;
+$alert-warning-confirm-hover: rgba(255, 193, 7, 0.85); // Darker variant of $color-warning
+$alert-warning-confirm-active: rgba(255, 193, 7, 0.75); // Even darker for active state
+
+// Alert component colors by type - Success (Green variants)
+$alert-success-background: $color-success-light;
+$alert-success-border: $color-success;
+$alert-success-icon: $color-success;
+$alert-success-confirm-background: $color-success;
+$alert-success-confirm-text: white;
+$alert-success-confirm-hover: rgba(40, 167, 69, 0.85); // Darker variant of $color-success
+$alert-success-confirm-active: rgba(40, 167, 69, 0.75); // Even darker for active state

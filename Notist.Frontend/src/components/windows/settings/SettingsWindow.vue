@@ -20,7 +20,6 @@
                         v-model="settings.Theme"
                         :options="THEME_OPTIONS"
                         placeholder="Select theme..."
-                        :requires-restart="true"
                         @update:model-value="onThemeChange"
                     />
                     <SliderSetting
@@ -58,6 +57,7 @@
                             modifiers: settings.HotkeyModifiers,
                             key: settings.HotkeyKey,
                         }"
+                        :requires-restart="true"
                         @update:model-value="onKeybindChange"
                     />
                 </template>
@@ -92,13 +92,14 @@ import SelectSetting from "@/components/windows/settings/SelectSetting.vue";
 import SliderSetting from "@/components/windows/settings/SliderSetting.vue";
 import SwitchSetting from "@/components/windows/settings/SwitchSetting.vue";
 import KeybindSetting from "@/components/windows/settings/KeybindSetting.vue";
+import SettingsSection from "@/components/windows/settings/SettingsSection.vue";
 import { useSettings } from "@/lib/useSettings";
 import { useAlertManager } from "@/lib/alertManager";
 import { THEME_OPTIONS } from "@/lib/themeService";
 
 // shared settings styles
 import "@/components/windows/settings/styles/settings.scss";
-import SettingsSection from "./settingsSection.vue";
+import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
 const emit = defineEmits<{
     close: [];
@@ -137,8 +138,8 @@ const loadSettingsWithErrorHandling = async () => {
         showWarningDialog(
             "Settings Load Error",
             "Failed to load current settings. Default values will be used. You can try refreshing the settings or contact support if the problem persists.",
-            () => loadSettingsWithErrorHandling(), // onConfirm - retry loading
-            () => {} // onCancel - continue with defaults
+            () => loadSettingsWithErrorHandling(), // retry loading
+            () => {} // continue with defaults
         );
     }
 };
@@ -166,7 +167,8 @@ const beforeClose = (): boolean => {
                 await cancelSettingsChanges();
                 emit("close");
             }, // onConfirm - close anyway
-            () => {} // onCancel - stay open
+            () => {}, // onCancel - stay open
+            faTrashCan
         );
         return false;
     }
@@ -253,30 +255,6 @@ const onKeybindChange = (value: { modifiers: string; key: string }) => {
     }
 };
 
-const formatKeybind = (modifiers: string, key: string): string => {
-    const modifierList = modifiers
-        .split(",")
-        .filter((m) => m.trim())
-        .map((m) => {
-            switch (m.trim()) {
-                case "Control":
-                    return "Ctrl";
-                case "Alt":
-                    return "Alt";
-                case "Shift":
-                    return "Shift";
-                case "Win":
-                    return "Win";
-                default:
-                    return m;
-            }
-        });
-
-    return modifierList.length > 0
-        ? `${modifierList.join(" + ")} + ${key}`
-        : key;
-};
-
 const saveChanges = async () => {
     try {
         await saveToFile();
@@ -302,7 +280,8 @@ const cancelChanges = async () => {
                 await cancelSettingsChanges();
                 emit("close");
             },
-            () => {} // onCancel - stay open
+            () => {},
+            faTrashCan
         );
     } else {
         // No changes, close directly
@@ -314,26 +293,6 @@ const cancelChanges = async () => {
 <style lang="scss">
 @import "@/styles/variables";
 @import "./styles/settings";
-
-.settings-section {
-    margin-bottom: 2.5rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid $color-border-primary;
-
-    &:last-child {
-        margin-bottom: 0;
-        padding-bottom: 0;
-        border-bottom: none;
-    }
-
-    h3 {
-        margin: 0 0 1.25rem 0;
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: $color-text-primary;
-        letter-spacing: -0.025em;
-    }
-}
 
 .loading-state,
 .error-state {

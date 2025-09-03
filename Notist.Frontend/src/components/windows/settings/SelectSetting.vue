@@ -70,6 +70,7 @@ defineEmits<{
 
 <style lang="scss" scoped>
 @import "./styles/settings";
+@import "./styles/variables";
 @import "@/styles/variables";
 
 // Radix Select Styles
@@ -181,7 +182,7 @@ defineEmits<{
 
     &[data-state="checked"] {
         background: $color-accent-primary;
-        color: white;
+        color: $select-checked-text;
         font-weight: 500;
 
         &::after {

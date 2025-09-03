@@ -1,3 +1,7 @@
+import {
+    faPowerOff,
+    type IconDefinition,
+} from "@fortawesome/free-solid-svg-icons";
 import { ref } from "vue";
 
 export interface AlertConfig {
@@ -6,10 +10,13 @@ export interface AlertConfig {
     confirmText?: string;
     cancelText?: string;
     showCancel?: boolean;
-    icon?: any;
+    icon?: IconDefinition;
     onConfirm?: () => void;
     onCancel?: () => void;
+    type?: AlertType;
 }
+
+export type AlertType = "success" | "error" | "warning";
 
 const isAlertOpen = ref(false);
 const currentAlert = ref<AlertConfig | null>(null);
@@ -34,7 +41,9 @@ export function useAlertManager() {
         title: string,
         description: string,
         onConfirm?: () => void,
-        onCancel?: () => void
+        onCancel?: () => void,
+        icon?: IconDefinition,
+        type?: AlertType
     ) => {
         showAlert({
             title,
@@ -42,8 +51,10 @@ export function useAlertManager() {
             confirmText: "Confirm",
             cancelText: "Cancel",
             showCancel: true,
+            type: type || "warning",
             onConfirm,
             onCancel,
+            icon,
         });
     };
 
@@ -55,8 +66,10 @@ export function useAlertManager() {
             confirmText: "Quit",
             cancelText: "Cancel",
             showCancel: true,
+            icon: faPowerOff,
             onConfirm,
             onCancel,
+            type: "error",
         });
     };
 
@@ -64,7 +77,9 @@ export function useAlertManager() {
         title: string,
         description: string,
         onConfirm?: () => void,
-        onCancel?: () => void
+        onCancel?: () => void,
+        icon?: IconDefinition,
+        type?: AlertType
     ) => {
         showAlert({
             title,
@@ -72,8 +87,10 @@ export function useAlertManager() {
             confirmText: "OK",
             cancelText: "Cancel",
             showCancel: true,
+            type: type || "warning",
             onConfirm,
             onCancel,
+            icon,
         });
     };
 

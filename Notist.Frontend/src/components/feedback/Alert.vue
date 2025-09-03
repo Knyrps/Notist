@@ -1,5 +1,5 @@
 <template>
-    <div class="alert">
+    <div :class="`alert alert--${type}`">
         <div class="alert__header">
             <div class="alert__icon">
                 <FontAwesomeIcon :icon="props.icon" />
@@ -29,7 +29,11 @@
 
 <script setup lang="ts">
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
+import {
+    faTriangleExclamation,
+    type IconDefinition,
+} from "@fortawesome/free-solid-svg-icons";
+import type { AlertType } from "@/lib/alertManager";
 
 interface AlertProps {
     title: string;
@@ -37,7 +41,8 @@ interface AlertProps {
     confirmText?: string;
     cancelText?: string;
     showCancel?: boolean;
-    icon?: any;
+    icon?: IconDefinition;
+    type?: AlertType;
 }
 
 const props = withDefaults(defineProps<AlertProps>(), {
@@ -45,6 +50,7 @@ const props = withDefaults(defineProps<AlertProps>(), {
     cancelText: "Cancel",
     showCancel: true,
     icon: () => faTriangleExclamation,
+    type: "warning",
 });
 
 defineEmits<{
@@ -55,7 +61,7 @@ defineEmits<{
 
 <style lang="scss" scoped>
 @import "@/styles/_fonts.scss";
-@import "@/styles/variables";
+@import "./styles/variables";
 
 .alert {
     max-width: 26rem;
@@ -66,6 +72,84 @@ defineEmits<{
     border-radius: $radius-primary;
     box-shadow: $shadow-strong;
     backdrop-filter: $blur-strong;
+
+    &--error {
+        .alert__icon {
+            background: $alert-error-background;
+            border-color: $alert-error-border;
+
+            svg {
+                color: $alert-error-icon;
+            }
+        }
+
+        .alert__button--confirm {
+            background: $alert-error-confirm-background;
+            color: $alert-error-confirm-text;
+            border-color: $alert-error-confirm-background;
+
+            &:hover {
+                background: $alert-error-confirm-hover;
+                border-color: $alert-error-confirm-hover;
+            }
+
+            &:active {
+                background: $alert-error-confirm-active;
+            }
+        }
+    }
+
+    &--warning {
+        .alert__icon {
+            background: $alert-warning-background;
+            border-color: $alert-warning-border;
+
+            svg {
+                color: $alert-warning-icon;
+            }
+        }
+
+        .alert__button--confirm {
+            background: $alert-warning-confirm-background;
+            color: $alert-warning-confirm-text;
+            border-color: $alert-warning-confirm-background;
+
+            &:hover {
+                background: $alert-warning-confirm-hover;
+                border-color: $alert-warning-confirm-hover;
+            }
+
+            &:active {
+                background: $alert-warning-confirm-active;
+            }
+        }
+    }
+
+    &--success {
+        .alert__icon {
+            background: $alert-success-background;
+            border-color: $alert-success-border;
+
+            svg {
+                color: $alert-success-icon;
+            }
+        }
+
+        .alert__button--confirm {
+            background: $alert-success-confirm-background;
+            color: $alert-success-confirm-text;
+            border-color: $alert-success-confirm-background;
+
+            &:hover {
+                background: $alert-success-confirm-hover;
+                border-color: $alert-success-confirm-hover;
+            }
+
+            &:active {
+                background: $alert-success-confirm-active;
+            }
+        }
+    }
 
     &__header {
         display: flex;
@@ -80,15 +164,13 @@ defineEmits<{
         justify-content: center;
         width: 3rem;
         height: 3rem;
-        background: $color-error-light;
-        border: 2px solid $color-error;
+        border: 2px solid;
         border-radius: 50%;
         flex-shrink: 0;
 
         svg {
             width: 1.5rem;
             height: 1.5rem;
-            color: $color-error;
         }
     }
 
@@ -139,17 +221,17 @@ defineEmits<{
         }
 
         &--confirm {
-            background: $color-error;
+            background: $color-accent-primary;
             color: white;
-            border-color: $color-error;
+            border-color: $color-accent-primary;
 
             &:hover {
-                background: #c82333;
-                border-color: #c82333;
+                background: $color-accent-primary-dark;
+                border-color: $color-accent-primary-dark;
             }
 
             &:active {
-                background: #bd2130;
+                background: $color-accent-primary-dark;
                 transform: translateY(1px);
             }
         }

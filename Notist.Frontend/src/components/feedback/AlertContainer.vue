@@ -14,6 +14,7 @@
                     :cancel-text="currentAlert.cancelText"
                     :show-cancel="currentAlert.showCancel"
                     :icon="currentAlert.icon"
+                    :type="currentAlert.type"
                     @confirm="handleConfirm"
                     @cancel="handleCancel"
                 />

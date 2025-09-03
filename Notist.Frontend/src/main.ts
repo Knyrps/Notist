@@ -1,4 +1,4 @@
-import { createApp } from "vue";
+import { createApp, nextTick } from "vue";
 import "./style.scss";
 import "normalize.css";
 import App from "./App.vue";
@@ -14,3 +14,7 @@ GlobalSettingsStore.loadSettings().catch((error) => {
 });
 
 app.mount("#app");
+
+nextTick(() => {
+    window.dispatchEvent(new Event("app:ready"));
+});

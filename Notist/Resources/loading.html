@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notist - Loading</title>
+    <style>
+        /* Colors (Dark/Light automatically) */
+        :root {
+            --bg: #ffffff;
+            --fg: #111111;
+            --color-border-focus: rgba(100, 150, 255, 0.8);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0b0b0c;
+                --fg: #f5f5f5;
+            }
+        }
+
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            overflow: hidden;
+        }
+
+        /* Loading overlay */
+        #loading-overlay {
+            position: fixed;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            background: var(--bg);
+            color: var(--fg);
+            z-index: 9999;
+        }
+
+        .loading-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .loading-title {
+            font-size: 2rem;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            color: var(--fg);
+            opacity: 0.8;
+        }
+
+        /* CSS Loader from css-loaders.com - Loader #20 */
+        .loader {
+            width: 50px;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            border: 12px solid var(--color-border-focus);
+            animation:
+                l20-1 0.8s infinite linear alternate,
+                l20-2 1.6s infinite linear;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .loader {
+                animation: none;
+                border: 12px solid var(--color-border-focus);
+            }
+
+            .loading-title {
+                animation: none;
+            }
+        }
+
+        @keyframes l20-1 {
+            0% {
+                clip-path: polygon(50% 50%, 0 0, 50% 0%, 50% 0%, 50% 0%, 50% 0%, 50% 0%)
+            }
+
+            12.5% {
+                clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 0%, 100% 0%, 100% 0%)
+            }
+
+            25% {
+                clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 100%, 100% 100%, 100% 100%)
+            }
+
+            50% {
+                clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%)
+            }
+
+            62.5% {
+                clip-path: polygon(50% 50%, 100% 0, 100% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%)
+            }
+
+            75% {
+                clip-path: polygon(50% 50%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 50% 100%, 0% 100%)
+            }
+
+            100% {
+                clip-path: polygon(50% 50%, 50% 100%, 50% 100%, 50% 100%, 50% 100%, 50% 100%, 0% 100%)
+            }
+        }
+
+        @keyframes l20-2 {
+            0% {
+                transform: scaleY(1) rotate(0deg)
+            }
+
+            49.99% {
+                transform: scaleY(1) rotate(135deg)
+            }
+
+            50% {
+                transform: scaleY(-1) rotate(0deg)
+            }
+
+            100% {
+                transform: scaleY(-1) rotate(-135deg)
+            }
+        }
+
+        /* Optional subtle title animation */
+        .loading-title {
+            animation: fadeInOut 2s ease-in-out infinite;
+        }
+
+        @keyframes fadeInOut {
+
+            0%,
+            100% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 0.9;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loading-overlay" role="status" aria-live="polite" aria-label="Loading Notist">
+        <div class="loading-content">
+            <h1 class="loading-title">NOTIST</h1>
+            <div class="loader" aria-hidden="true"></div>
+        </div>
+    </div>
+
+    <script>
+        // Create a styled console message
+        const style = "color: var(--color-border-focus); font-size: 1.5em; font-weight: bold;";
+        const start = performance.now();
+
+        if (typeof console.info === "function") {
+            console.info("%cNotist initializing...", style);
+        } else {
+            console.log("%cNotist initializing...", style);
+        }
+
+        // Optional: Add a minimum loading time to prevent flash
+        const minLoadingTime = 500; // 500ms minimum
+
+        // Simulate WebView readiness (you can remove this in production)
+        setTimeout(() => {
+            const end = performance.now();
+            const duration = end - start;
+            typeof console.info === "function"
+                ? console.info(`%cNotist loading screen ready (${duration.toFixed(2)}ms)`, style)
+                : console.log(`%cNotist loading screen ready (${duration.toFixed(2)}ms)`, style);
+        }, minLoadingTime);
+    </script>
+</body>
+
+</html>

@@ -9,7 +9,10 @@
                 @blur="cancelRecording"
                 tabindex="0"
             >
-                {{ displayValue }}
+                <span v-if="isRecording">{{ displayValue }}</span>
+                <span v-else>
+                    <kbd class="shortcut-key"> {{ displayValue }}</kbd></span
+                >
             </button>
             <div v-if="isRecording" class="keybind-help">
                 Press any key combination, then press Enter to confirm or Escape
@@ -216,6 +219,17 @@ onUnmounted(async () => {
     display: flex;
     flex-direction: column;
     gap: 4px;
+}
+
+// DUPLICATE
+.shortcut-key {
+    background: $color-bg-primary;
+    border: 1px solid $color-border-primary;
+    border-radius: $radius-secondary;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-family: monospace;
+    color: $color-text-secondary;
 }
 
 .keybind-button {

@@ -1,0 +1,102 @@
+@import "@/styles/variables";
+
+// Common setting component styles
+.setting-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    gap: 1.5rem;
+    min-height: 2.5rem;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    >label:first-child {
+        font-size: 0.875rem;
+        color: $color-text-primary;
+        font-weight: 500;
+        min-width: 0;
+        flex-shrink: 0;
+    }
+
+    // Special layout for switch controls
+    .setting-switch-label {
+        justify-content: flex-start;
+        gap: 0;
+        width: auto;
+        flex: 1;
+    }
+}
+
+.setting-control {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 120px;
+
+    &--vertical {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+    }
+}
+
+.setting-info {
+    font-size: 0.7rem;
+    color: $color-text-secondary;
+    opacity: 0.7;
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.3;
+}
+
+.setting-value {
+    font-size: 0.75rem;
+    color: $color-text-secondary;
+    min-width: 3rem;
+    text-align: right;
+    font-weight: 500;
+}
+
+// Common UI components
+.shortcut-key {
+    background: $color-bg-primary;
+    border: 1px solid $color-border-primary;
+    border-radius: $radius-secondary;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-family: monospace;
+    color: $color-text-secondary;
+}
+
+.button {
+    padding: 0.5rem 1rem;
+    border-radius: $radius-secondary;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all $transition-medium;
+
+    &--secondary {
+        background: transparent;
+        border: 1px solid $color-border-primary;
+        color: $color-text-primary;
+
+        &:hover {
+            background: $color-bg-hover;
+        }
+    }
+
+    &--primary {
+        background: $color-accent-primary;
+        border: 1px solid $color-accent-primary;
+        color: white;
+
+        &:hover {
+            background: $color-accent-primary-dark;
+            border-color: $color-accent-primary-dark;
+        }
+    }
+}

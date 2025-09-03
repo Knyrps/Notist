@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import { useWindowManager } from "@/lib/windowManager";
-import SettingsWindow from "../windows/SettingsWindow.vue";
+import SettingsWindow from "@/components/windows/settings/SettingsWindow.vue";
 
 const { isWindowOpen, closeWindow, isWindowActive } = useWindowManager();
 

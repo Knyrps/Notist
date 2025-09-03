@@ -5,6 +5,17 @@
 
 export type ThemeMode = "Light" | "Dark" | "Auto";
 
+export interface ThemeOption {
+    value: ThemeMode;
+    label: string;
+}
+
+export const THEME_OPTIONS: ThemeOption[] = [
+    { value: "Light", label: "Light" },
+    { value: "Dark", label: "Dark" },
+    { value: "Auto", label: "Auto" },
+];
+
 export class ThemeService {
     private static currentTheme: ThemeMode = "Auto";
 

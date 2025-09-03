@@ -16,6 +16,9 @@ production-dist*/
 production-dist-*/
 dist/
 
+# Copilot
+chatSummaries/
+
 # Visual Studio
 .vs/
 .vscode/settings.json

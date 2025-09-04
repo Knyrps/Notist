@@ -1,5 +1,5 @@
 <template>
-    <header id="header" class="header">
+    <header id="header" class="header drag-snap-down">
         <div class="header__block header__block--left">
             <Nav text="Notist v1.0.0" />
         </div>

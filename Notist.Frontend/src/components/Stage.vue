@@ -30,7 +30,8 @@ function handleWindowDrop(event: DragEvent) {
     // Only handle if not dropped on a droppable area
     const droppable =
         (event.target as HTMLElement)?.classList?.contains("droppable") ||
-        (event.target as HTMLElement)?.closest?.(".droppable");
+        (event.target as HTMLElement)?.closest?.(".droppable") ||
+        (event.target as HTMLElement)?.closest?.(".drag-snap-down");
     if (droppable) {
         return;
     }
@@ -66,7 +67,8 @@ window.addEventListener("drop", handleWindowDrop);
 window.addEventListener("dragover", (event) => {
     const droppable =
         (event.target as HTMLElement)?.classList?.contains("droppable") ||
-        (event.target as HTMLElement)?.closest?.(".droppable");
+        (event.target as HTMLElement)?.closest?.(".droppable") ||
+        (event.target as HTMLElement)?.closest?.(".drag-snap-down");
     if (droppable) {
         event.dataTransfer!.dropEffect = "move";
         return;

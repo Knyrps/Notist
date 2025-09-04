@@ -69,9 +69,9 @@ defineEmits<{
 </script>
 
 <style lang="scss" scoped>
-@import "./styles/settings";
-@import "./styles/variables";
-@import "@/styles/variables";
+@import "@/components/windows/settings/styles/settings";
+@import "@/components/windows/settings/styles/_variables";
+@import "@/styles/_variables";
 
 // Radix Select Styles
 .setting-select {

@@ -14,6 +14,7 @@
 
 <script setup lang="ts">
 type DragEventData = {
+    type: string;
     id: string;
     position: {
         x: number;
@@ -26,7 +27,60 @@ type DragEventData = {
     originalOpacity: string;
 };
 
+function dragStart(event: DragEvent) {
+    if (
+        !event.dataTransfer ||
+        !(event.target as HTMLElement).classList.contains("note")
+    )
+        return;
+
+    const el = event.target as HTMLElement;
+    const rect = el.getBoundingClientRect();
+
+    const offsetX = event.clientX - rect.left;
+    const offsetY = event.clientY - rect.top;
+
+    const originalX = rect.left;
+    const originalY = rect.top;
+
+    const copyOfElement = el.cloneNode(true) as HTMLElement;
+    copyOfElement.style.position = "absolute";
+    copyOfElement.style.top = "-9999px";
+    copyOfElement.style.left = "-9999px";
+    document.body.appendChild(copyOfElement);
+
+    // Get computed opacity or default to "1" if not set
+    const initialOpacity = el.style.opacity || "1";
+    el.style.opacity = "0";
+
+    const dragEventData: DragEventData = {
+        type: "note",
+        id: el.id,
+        position: { x: offsetX, y: offsetY },
+        originalOpacity: initialOpacity,
+        originalPosition: { x: originalX, y: originalY },
+    };
+
+    // Set up dragend event listener to restore visibility if drop doesn't occur
+    const handleDragEnd = () => {
+        if (el.style.opacity === "0") {
+            el.style.opacity = initialOpacity;
+        }
+        // Clean up the event listener
+        el.removeEventListener("dragend", handleDragEnd);
+    };
+
+    el.addEventListener("dragend", handleDragEnd);
+
+    event.dataTransfer.setDragImage(copyOfElement, offsetX, offsetY);
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/json", JSON.stringify(dragEventData));
+
+    setTimeout(() => document.body.removeChild(copyOfElement), 0);
+}
+
 function handleWindowDrop(event: DragEvent) {
+    if (!isDraggingNote(event)) return;
     // Only handle if not dropped on a droppable area
     const droppable =
         (event.target as HTMLElement)?.classList?.contains("droppable") ||
@@ -65,6 +119,7 @@ function handleWindowDrop(event: DragEvent) {
 
 window.addEventListener("drop", handleWindowDrop);
 window.addEventListener("dragover", (event) => {
+    if (!isDraggingNote(event)) return;
     const droppable =
         (event.target as HTMLElement)?.classList?.contains("droppable") ||
         (event.target as HTMLElement)?.closest?.(".droppable") ||
@@ -76,54 +131,8 @@ window.addEventListener("dragover", (event) => {
     event.dataTransfer!.dropEffect = "none";
 });
 
-function dragStart(event: DragEvent) {
-    if (!event.dataTransfer) return;
-
-    const el = event.target as HTMLElement;
-    const rect = el.getBoundingClientRect();
-
-    const offsetX = event.clientX - rect.left;
-    const offsetY = event.clientY - rect.top;
-
-    const originalX = rect.left;
-    const originalY = rect.top;
-
-    const copyOfElement = el.cloneNode(true) as HTMLElement;
-    copyOfElement.style.position = "absolute";
-    copyOfElement.style.top = "-9999px";
-    copyOfElement.style.left = "-9999px";
-    document.body.appendChild(copyOfElement);
-
-    // Get computed opacity or default to "1" if not set
-    const initialOpacity = el.style.opacity || "1";
-    el.style.opacity = "0";
-
-    const dragEventData: DragEventData = {
-        id: el.id,
-        position: { x: offsetX, y: offsetY },
-        originalOpacity: initialOpacity,
-        originalPosition: { x: originalX, y: originalY },
-    };
-
-    // Set up dragend event listener to restore visibility if drop doesn't occur
-    const handleDragEnd = () => {
-        if (el.style.opacity === "0") {
-            el.style.opacity = initialOpacity;
-        }
-        // Clean up the event listener
-        el.removeEventListener("dragend", handleDragEnd);
-    };
-
-    el.addEventListener("dragend", handleDragEnd);
-
-    event.dataTransfer.setDragImage(copyOfElement, offsetX, offsetY);
-    event.dataTransfer.effectAllowed = "move";
-    event.dataTransfer.setData("text/json", JSON.stringify(dragEventData));
-
-    setTimeout(() => document.body.removeChild(copyOfElement), 0);
-}
-
 function drop(event: DragEvent) {
+    if (!isDraggingNote(event)) return;
     event.preventDefault();
 
     const data: DragEventData | null = event.dataTransfer
@@ -180,6 +189,13 @@ function drop(event: DragEvent) {
 function dragOver(event: DragEvent) {
     event.dataTransfer!.dropEffect = "move";
     event.preventDefault();
+}
+
+function isDraggingNote(event: DragEvent) {
+    const data: DragEventData | null = event.dataTransfer
+        ? JSON.parse(event.dataTransfer.getData("text/json"))
+        : null;
+    return data?.type === "note";
 }
 </script>
 

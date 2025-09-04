@@ -1,223 +1,322 @@
 <template>
-    <div class="stage droppable" :ondrop="drop" :ondragover="dragOver">
-        <div draggable="true" :ondragstart="dragStart" id="note-1" class="note">
-            Note 1
-        </div>
-        <div draggable="true" :ondragstart="dragStart" id="note-2" class="note">
-            Note 2
-        </div>
-        <div draggable="true" :ondragstart="dragStart" id="note-3" class="note">
-            Note 3
-        </div>
+    <div
+        class="stage droppable"
+        :class="{ 'stage--header-snap': isHoveringHeader }"
+        @drop="handleDrop"
+        @dragover="handleDragOver"
+        @click="handleStageClick"
+        ref="stageRef"
+    >
+        <NoteComponent
+            v-for="note in notes"
+            :key="note.id"
+            :note="note"
+            @dragstart="handleDragStart"
+            @dragend="handleDragEnd"
+            @edit="handleNoteEdit"
+            @focus="handleNoteFocus"
+            @save="handleNoteSave"
+            @cancel="handleNoteCancel"
+        />
     </div>
 </template>
 
 <script setup lang="ts">
-type DragEventData = {
-    type: string;
-    id: string;
-    position: {
-        x: number;
-        y: number;
+import { ref, onMounted, onUnmounted } from "vue";
+import NoteComponent from "@/components/notes/Note.vue";
+import type { Position, Note, DragData } from "@/types/note";
+
+// Reactive data
+const stageRef = ref<HTMLElement>();
+const notes = ref<Note[]>([
+    {
+        id: "note-1",
+        title: "First Note",
+        content: "This is the content of the first note",
+        position: { x: 50, y: 50 },
+        isDragging: false,
+        isEditing: false,
+        zIndex: 1,
+    },
+    {
+        id: "note-2",
+        title: "Second Note",
+        content: "This is the content of the second note",
+        position: { x: 150, y: 100 },
+        isDragging: false,
+        isEditing: false,
+        zIndex: 2,
+    },
+    {
+        id: "note-3",
+        title: "Third Note",
+        content: "This is the content of the third note",
+        position: { x: 250, y: 150 },
+        isDragging: false,
+        isEditing: false,
+        zIndex: 3,
+    },
+]);
+
+// Drag state
+const dragData = ref<DragData | null>(null);
+const isHoveringHeader = ref(false);
+
+// Note stacking system
+function bringNoteToFront(noteId: string) {
+    const note = notes.value.find((n) => n.id === noteId);
+    if (!note) return;
+
+    // Get the current highest z-index
+    const maxZIndex = Math.max(...notes.value.map((n) => n.zIndex));
+
+    // Only update if this note isn't already on top
+    if (note.zIndex < maxZIndex) {
+        note.zIndex = maxZIndex + 1;
+    }
+}
+
+// Drag handlers
+function handleDragStart(note: Note, event: DragEvent) {
+    if (!event.dataTransfer) return;
+
+    // Bring the dragged note to front
+    bringNoteToFront(note.id);
+
+    note.isDragging = true;
+
+    const rect = (event.target as HTMLElement).getBoundingClientRect();
+    const offset: Position = {
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top,
     };
-    originalPosition?: {
-        x: number;
-        y: number;
-    };
-    originalOpacity: string;
-};
 
-function dragStart(event: DragEvent) {
-    if (
-        !event.dataTransfer ||
-        !(event.target as HTMLElement).classList.contains("note")
-    )
-        return;
+    stageRef.value?.classList.add("stage--isdragging");
 
-    const el = event.target as HTMLElement;
-    const rect = el.getBoundingClientRect();
-
-    const offsetX = event.clientX - rect.left;
-    const offsetY = event.clientY - rect.top;
-
-    const originalX = rect.left;
-    const originalY = rect.top;
-
-    const copyOfElement = el.cloneNode(true) as HTMLElement;
-    copyOfElement.style.position = "absolute";
-    copyOfElement.style.top = "-9999px";
-    copyOfElement.style.left = "-9999px";
-    document.body.appendChild(copyOfElement);
-
-    // Get computed opacity or default to "1" if not set
-    const initialOpacity = el.style.opacity || "1";
-    el.style.opacity = "0";
-
-    const dragEventData: DragEventData = {
-        type: "note",
-        id: el.id,
-        position: { x: offsetX, y: offsetY },
-        originalOpacity: initialOpacity,
-        originalPosition: { x: originalX, y: originalY },
+    dragData.value = {
+        noteId: note.id,
+        offset,
     };
 
-    // Set up dragend event listener to restore visibility if drop doesn't occur
-    const handleDragEnd = () => {
-        if (el.style.opacity === "0") {
-            el.style.opacity = initialOpacity;
-        }
-        // Clean up the event listener
-        el.removeEventListener("dragend", handleDragEnd);
-    };
-
-    el.addEventListener("dragend", handleDragEnd);
-
-    event.dataTransfer.setDragImage(copyOfElement, offsetX, offsetY);
     event.dataTransfer.effectAllowed = "move";
-    event.dataTransfer.setData("text/json", JSON.stringify(dragEventData));
-
-    setTimeout(() => document.body.removeChild(copyOfElement), 0);
+    event.dataTransfer.setData(
+        "application/json",
+        JSON.stringify(dragData.value)
+    );
 }
 
-function handleWindowDrop(event: DragEvent) {
-    if (!isDraggingNote(event)) return;
-    // Only handle if not dropped on a droppable area
-    const droppable =
-        (event.target as HTMLElement)?.classList?.contains("droppable") ||
-        (event.target as HTMLElement)?.closest?.(".droppable") ||
-        (event.target as HTMLElement)?.closest?.(".drag-snap-down");
-    if (droppable) {
-        return;
-    }
+function handleDragEnd(note: Note) {
+    note.isDragging = false;
+    dragData.value = null;
+    isHoveringHeader.value = false;
+    stageRef.value?.classList.remove("stage--isdragging");
+}
 
+function handleDragOver(event: DragEvent) {
     event.preventDefault();
-    const data: DragEventData | null = event.dataTransfer
-        ? JSON.parse(event.dataTransfer.getData("text/json"))
-        : null;
-    if (!data) {
-        return;
+    if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = "move";
     }
 
-    const draggableElement = document.getElementById(data.id);
-    if (!draggableElement) {
-        return;
-    }
+    // Dynamically calculate header height and snap threshold
+    const headerElement = document.getElementById("header");
+    const headerHeight = headerElement ? headerElement.offsetHeight : 64; // fallback to 4rem
+    const snapThreshold = 20; // reasonable default
 
-    // Clear the safety timer since we have a proper drop
-    if (draggableElement.dataset.safetyTimer) {
-        clearTimeout(parseInt(draggableElement.dataset.safetyTimer));
-        delete draggableElement.dataset.safetyTimer;
-    }
-
-    // Reset element to its original position (or hide, or any fallback logic)
-    draggableElement.style.opacity = data.originalOpacity || "1";
-    draggableElement.style.left = data.originalPosition?.x + "px";
-    draggableElement.style.top = data.originalPosition?.y + "px";
-
-    event.dataTransfer?.clearData();
+    // Check if cursor is near the header area for snapping
+    const cursorY = event.clientY;
+    isHoveringHeader.value = cursorY <= headerHeight + snapThreshold;
 }
 
-window.addEventListener("drop", handleWindowDrop);
-window.addEventListener("dragover", (event) => {
-    if (!isDraggingNote(event)) return;
-    const droppable =
-        (event.target as HTMLElement)?.classList?.contains("droppable") ||
-        (event.target as HTMLElement)?.closest?.(".droppable") ||
-        (event.target as HTMLElement)?.closest?.(".drag-snap-down");
-    if (droppable) {
-        event.dataTransfer!.dropEffect = "move";
-        return;
+function handleDrop(event: DragEvent) {
+    event.preventDefault();
+
+    if (!event.dataTransfer || !stageRef.value) return;
+
+    try {
+        const data: DragData = JSON.parse(
+            event.dataTransfer.getData("application/json")
+        );
+        const note = notes.value.find((n) => n.id === data.noteId);
+
+        if (!note) return;
+
+        const stageRect = stageRef.value.getBoundingClientRect();
+        let newPosition: Position = {
+            x: event.clientX - stageRect.left - data.offset.x,
+            y: event.clientY - stageRect.top - data.offset.y,
+        };
+
+        // Header snap logic - if hovering near header, snap to top of stage
+        if (isHoveringHeader.value) {
+            newPosition.y = 0;
+        }
+
+        // Boundary constraints
+        const noteElement = document.getElementById(note.id);
+        if (noteElement) {
+            const noteRect = noteElement.getBoundingClientRect();
+            const maxX = stageRef.value.offsetWidth - noteRect.width;
+            const maxY = stageRef.value.offsetHeight - noteRect.height;
+
+            newPosition.x = Math.max(0, Math.min(maxX, newPosition.x));
+            if (!isHoveringHeader.value) {
+                // Only apply Y boundary if not snapping to header
+                newPosition.y = Math.max(0, Math.min(maxY, newPosition.y));
+            }
+        }
+
+        note.position = newPosition;
+        note.isDragging = false;
+
+        // Reset header hover state
+        isHoveringHeader.value = false;
+    } catch (error) {
+        console.error("Error handling drop:", error);
     }
-    event.dataTransfer!.dropEffect = "none";
+}
+
+// Global drag handlers for preventing drops outside stage
+function handleGlobalDragOver(event: DragEvent) {
+    const target = event.target as HTMLElement;
+    const isDroppable = target?.closest(".droppable") !== null;
+
+    if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = isDroppable ? "move" : "none";
+    }
+
+    if (!isDroppable) {
+        event.preventDefault();
+    }
+}
+
+function handleGlobalDrop(event: DragEvent) {
+    const target = event.target as HTMLElement;
+    const isDroppable = target?.closest(".droppable") !== null;
+
+    if (!isDroppable && dragData.value) {
+        event.preventDefault();
+        // Reset note position if dropped outside stage
+        const note = notes.value.find((n) => n.id === dragData.value?.noteId);
+        if (note) {
+            note.isDragging = false;
+        }
+    }
+}
+
+// Note editing handlers
+function handleNoteEdit(note: Note) {
+    // Bring the edited note to front
+    bringNoteToFront(note.id);
+
+    // Close any other editing notes
+    notes.value.forEach((n) => {
+        if (n.id !== note.id) {
+            n.isEditing = false;
+        }
+    });
+
+    // Open editing mode for this note
+    note.isEditing = true;
+}
+
+function handleNoteFocus(note: Note) {
+    // Bring the focused note to front
+    bringNoteToFront(note.id);
+}
+function handleNoteSave(noteId: string, title: string, content: string) {
+    const note = notes.value.find((n) => n.id === noteId);
+    if (note) {
+        note.title = title;
+        note.content = content;
+        note.isEditing = false;
+    }
+}
+
+function handleNoteCancel(noteId: string) {
+    const note = notes.value.find((n) => n.id === noteId);
+    if (note) {
+        note.isEditing = false;
+    }
+}
+
+function handleStageClick(event: MouseEvent) {
+    // Close all editing modes when clicking on the stage
+    const target = event.target as HTMLElement;
+    if (target === stageRef.value) {
+        notes.value.forEach((note) => {
+            note.isEditing = false;
+        });
+    }
+}
+
+// Lifecycle
+onMounted(() => {
+    document.addEventListener("dragover", handleGlobalDragOver);
+    document.addEventListener("drop", handleGlobalDrop);
 });
 
-function drop(event: DragEvent) {
-    if (!isDraggingNote(event)) return;
-    event.preventDefault();
-
-    const data: DragEventData | null = event.dataTransfer
-        ? JSON.parse(event.dataTransfer.getData("text/json"))
-        : null;
-    if (!data) {
-        return;
-    }
-
-    const draggableElement = document.getElementById(data.id);
-    if (!draggableElement) {
-        return;
-    }
-
-    let dropzone = event.target as HTMLElement;
-
-    // allow dropping while the cursor is still over dragged element
-    if (dropzone == draggableElement) {
-        let maxIterations = 10;
-        while (!dropzone.classList.contains("droppable") && maxIterations > 0) {
-            dropzone = dropzone.parentElement as HTMLElement;
-            maxIterations--;
-        }
-    }
-
-    dropzone.appendChild(draggableElement);
-    draggableElement.style.opacity = data.originalOpacity || "1";
-
-    const { x: offsetX, y: offsetY } = data.position;
-    const dropzoneRect = dropzone.getBoundingClientRect();
-
-    const position: { x: number; y: number } = {
-        x: event.clientX - dropzoneRect.left - offsetX,
-        y: event.clientY - dropzoneRect.top - offsetY,
-    };
-
-    if (position.x + draggableElement.offsetWidth > dropzone.offsetWidth) {
-        position.x = dropzone.offsetWidth - draggableElement.offsetWidth;
-    }
-
-    if (position.y + draggableElement.offsetHeight > dropzone.offsetHeight) {
-        position.y = dropzone.offsetHeight - draggableElement.offsetHeight;
-    }
-
-    if (position.x < 0) position.x = 0;
-    if (position.y < 0) position.y = 0;
-
-    draggableElement.style.left = position.x + "px";
-    draggableElement.style.top = position.y + "px";
-
-    event.dataTransfer?.clearData();
-}
-
-function dragOver(event: DragEvent) {
-    event.dataTransfer!.dropEffect = "move";
-    event.preventDefault();
-}
-
-function isDraggingNote(event: DragEvent) {
-    const data: DragEventData | null = event.dataTransfer
-        ? JSON.parse(event.dataTransfer.getData("text/json"))
-        : null;
-    return data?.type === "note";
-}
+onUnmounted(() => {
+    document.removeEventListener("dragover", handleGlobalDragOver);
+    document.removeEventListener("drop", handleGlobalDrop);
+});
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@import "@/styles/_variables.scss";
+
 .stage {
+    box-sizing: border-box;
     height: 100%;
     width: 100%;
-    display: flex;
     position: relative;
 
-    /* debug props */
-    /* background: grey; */
+    overflow: visible;
+    transition: all 0.3s ease;
+
+    &::after {
+        opacity: 0;
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 2px;
+        border-top: 2px dashed $color-border-primary;
+        transition: opacity 0.3s ease;
+    }
 }
 
-.note {
+.stage--isdragging::after {
+    opacity: 1;
+    animation: shimmer 1.5s ease-in-out infinite;
+}
+
+.stage--header-snap::before {
+    content: "";
     position: absolute;
-    border: red solid 1px;
-    background: green;
-    height: 100px;
-    width: 180px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(
+        90deg,
+        $color-accent-primary,
+        $color-accent-primary-dark,
+        $color-accent-primary
+    );
+    border-radius: 2px 2px 0 0;
+    animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
 }
 </style>

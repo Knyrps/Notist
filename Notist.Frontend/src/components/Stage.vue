@@ -63,7 +63,16 @@ function handleWindowDrop(event: DragEvent) {
 }
 
 window.addEventListener("drop", handleWindowDrop);
-window.addEventListener("dragover", (e) => e.preventDefault());
+window.addEventListener("dragover", (event) => {
+    const droppable =
+        (event.target as HTMLElement)?.classList?.contains("droppable") ||
+        (event.target as HTMLElement)?.closest?.(".droppable");
+    if (droppable) {
+        event.dataTransfer!.dropEffect = "move";
+        return;
+    }
+    event.dataTransfer!.dropEffect = "none";
+});
 
 function dragStart(event: DragEvent) {
     if (!event.dataTransfer) return;
@@ -167,6 +176,7 @@ function drop(event: DragEvent) {
 }
 
 function dragOver(event: DragEvent) {
+    event.dataTransfer!.dropEffect = "move";
     event.preventDefault();
 }
 </script>
@@ -179,7 +189,7 @@ function dragOver(event: DragEvent) {
     position: relative;
 
     /* debug props */
-    background: grey;
+    /* background: grey; */
 }
 
 .note {

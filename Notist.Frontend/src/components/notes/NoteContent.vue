@@ -21,13 +21,12 @@
     <div v-else class="note-display">
         <div class="note-title">{{ title }}</div>
         <div class="note-separator"></div>
-        <div class="note-content" v-html="renderedContent"></div>
+        <div class="note-content" v-html="props.content"></div>
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref, nextTick, watch, computed } from "vue";
-import { setOptions, parse } from "marked";
 
 const props = defineProps<{
     title: string;
@@ -43,16 +42,6 @@ const emit = defineEmits<{
 // Editing state
 const editContent = ref("");
 const contentEditableRef = ref<HTMLDivElement>();
-
-// Set up markdown options
-setOptions({
-    breaks: true,
-});
-
-// Computed markdown rendering
-const renderedContent = computed(() => {
-    return parse(props.content);
-});
 
 // Watch for editing mode changes
 watch(

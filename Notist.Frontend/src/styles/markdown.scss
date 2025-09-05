@@ -1,6 +1,16 @@
 @import "variables";
 
 // Markdown output styling for all .md-out containers
+.md-header-preview-separator {
+    height: 2px;
+    background: linear-gradient(90deg,
+            $color-border-primary 0%,
+            transparent 60%,
+            transparent 100%);
+    margin: 6px 0;
+    opacity: 0.6;
+}
+
 .md-out {
 
     h1,

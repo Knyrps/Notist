@@ -27,7 +27,7 @@
                 <FontAwesomeIcon :icon="faPen" />
             </button>
         </div>
-        <div class="note-separator"></div>
+        <div class="md-header-preview-separator"></div>
         <div class="note-content md-out" v-html="props.htmlContent"></div>
     </div>
 </template>
@@ -141,18 +141,6 @@ function handleCancel() {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
-
-.note-separator {
-    height: 2px;
-    background: linear-gradient(
-        90deg,
-        $color-border-primary 0%,
-        $color-border-primary 40%,
-        transparent 100%
-    );
-    margin: 6px 0;
-    opacity: 0.6;
 }
 
 .note-content {

@@ -92,10 +92,9 @@ const handleCancel = () => {
 @import "@/styles/variables";
 
 .edit-note-window {
-    width: 800px;
-    max-width: 90vw;
-    height: 600px;
-    max-height: 80vh;
+    height: 100%;
+    width: 100%;
+    display: flex;
 }
 
 .edit-note-actions {
@@ -140,17 +139,6 @@ const handleCancel = () => {
     &:focus-visible {
         outline: 2px solid $color-accent-primary;
         outline-offset: 2px;
-    }
-}
-
-@media (max-width: 768px) {
-    .edit-note-window {
-        width: 100%;
-        height: 500px;
-    }
-
-    .edit-note-actions {
-        flex-direction: column;
     }
 }
 </style>

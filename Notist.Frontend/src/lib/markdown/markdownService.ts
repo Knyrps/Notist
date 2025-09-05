@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { ref, type Ref } from "vue";
 import { Marked } from "marked";
 import { markedHighlight } from "marked-highlight";
 import hljs from "highlight.js";
@@ -18,6 +18,8 @@ const marked = new Marked(
     })
 );
 
+marked.setOptions({ breaks: true });
+
 // Standalone function to convert markdown to HTML with syntax highlighting
 export const markdownToHtml = async (content: string): Promise<string> => {
     try {
@@ -25,13 +27,13 @@ export const markdownToHtml = async (content: string): Promise<string> => {
         return typeof result === "string" ? result : await result;
     } catch (error) {
         console.error("Markdown parsing error:", error);
-        return content; // Fallback to raw content
+        return content;
     }
 };
 
 type UseMarkdownReturn = {
-    raw: string;
-    html: string;
+    raw: Ref<string>;
+    html: Ref<string>;
     updateContent: (content: string) => void;
     handleKeyboardEvent: (event: KeyboardEvent) => void;
 };
@@ -119,8 +121,8 @@ export function useMarkdown(params: UseMarkdownParams = {}): UseMarkdownReturn {
     };
 
     return {
-        raw: rawContent.value,
-        html: htmlContent.value,
+        raw: rawContent,
+        html: htmlContent,
         updateContent,
         handleKeyboardEvent,
     };

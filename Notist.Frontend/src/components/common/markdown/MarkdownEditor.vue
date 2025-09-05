@@ -46,35 +46,50 @@
 
                 <!-- Preview mode -->
                 <div v-else class="output-section">
-                    <div
-                        class="markdown-output md-out"
-                        v-html="markdown.html"
-                    ></div>
+                    <div class="preview-header">
+                        <div class="preview-title">
+                            {{ splitContent.title }}
+                        </div>
+                    </div>
+                    <div class="md-header-preview-separator"></div>
+                    <div class="markdown-output md-out" v-html="bodyHtml"></div>
                 </div>
             </template>
 
             <!-- Side by side layout -->
             <template v-else>
                 <!-- Edit side -->
-                <div class="input-section input-section--side">
+                <div class="edit-section">
                     <h3 class="section-title">Edit</h3>
-                    <textarea
-                        v-model="markdownContent"
-                        @input="handleInput"
-                        @keydown="markdown.handleKeyboardEvent"
-                        placeholder="Type your markdown here..."
-                        class="markdown-input markdown-input--side"
-                        ref="textareaRef"
-                    ></textarea>
+                    <div class="input-section input-section--side">
+                        <textarea
+                            v-model="markdownContent"
+                            @input="handleInput"
+                            @keydown="markdown.handleKeyboardEvent"
+                            placeholder="Type your markdown here..."
+                            class="markdown-input markdown-input--side"
+                            ref="textareaRef"
+                        ></textarea>
+                    </div>
                 </div>
 
                 <!-- Preview side -->
-                <div class="output-section output-section--side">
+                <div class="preview-section">
                     <h3 class="section-title">Preview</h3>
-                    <div
-                        class="markdown-output markdown-output--side md-out"
-                        v-html="markdown.html"
-                    ></div>
+                    <div class="output-section output-section--side">
+                        <div class="preview-content">
+                            <div class="preview-header">
+                                <div class="preview-title">
+                                    {{ splitContent.title }}
+                                </div>
+                            </div>
+                            <div class="md-header-preview-separator"></div>
+                            <div
+                                class="markdown-output markdown-output--side md-out"
+                                v-html="bodyHtml"
+                            ></div>
+                        </div>
+                    </div>
                 </div>
             </template>
         </div>
@@ -142,7 +157,35 @@ const markdown = useMarkdown({
 });
 
 // Local reactive content for the textarea
-const markdownContent = ref(markdown.raw);
+const markdownContent = ref(markdown.raw.value);
+
+// Split content into title and body for preview
+const splitContent = computed(() => {
+    const content = markdown.raw.value || "";
+    const lines = content.split("\n");
+    const title = lines[0] || "";
+    const body = lines.slice(1).join("\n").trim();
+    return { title, body };
+});
+
+// Generate HTML for body content only (excluding title)
+const bodyHtml = ref("");
+
+// Watch for changes in body content and update HTML
+watch(
+    () => splitContent.value.body,
+    async (newBody) => {
+        if (!newBody) {
+            bodyHtml.value = "";
+            return;
+        }
+        const { markdownToHtml } = await import(
+            "@/lib/markdown/markdownService"
+        );
+        bodyHtml.value = await markdownToHtml(newBody);
+    },
+    { immediate: true }
+);
 
 // Mode toggle functions
 const setMode = (mode: "edit" | "preview") => {
@@ -172,7 +215,7 @@ const handleInput = (event: Event) => {
 
 // Watch for external changes to the markdown content
 watch(
-    () => markdown.raw,
+    () => markdown.raw.value,
     (newValue) => {
         markdownContent.value = newValue;
         emit("update:modelValue", newValue);
@@ -183,11 +226,12 @@ watch(
 watch(
     () => props.modelValue,
     (newValue) => {
-        if (newValue !== markdownContent.value) {
-            markdownContent.value = newValue;
-            markdown.updateContent(newValue);
+        if (newValue !== undefined && newValue !== markdownContent.value) {
+            markdownContent.value = newValue || "";
+            markdown.updateContent(newValue || "");
         }
-    }
+    },
+    { immediate: true }
 );
 </script>
 
@@ -195,11 +239,9 @@ watch(
 @import "@/styles/_variables";
 
 .markdown-editor {
-    background: $color-bg-overlay;
-    border-radius: $radius-primary;
-    box-shadow: $shadow-medium;
-    backdrop-filter: $blur-light;
     overflow: hidden;
+    height: 100%;
+    width: 100%;
 }
 
 .mode-toggle {
@@ -253,7 +295,6 @@ watch(
 
 .input-section,
 .output-section {
-    padding: 1.5rem;
     background: $color-bg-overlay;
     height: 400px;
     overflow-y: auto;
@@ -261,6 +302,7 @@ watch(
 }
 
 .markdown-input {
+    padding: 1.5rem;
     width: 100%;
     height: 100%;
     border: none;
@@ -281,7 +323,6 @@ watch(
 
 .markdown-output {
     height: 100%;
-    overflow-y: auto;
     background: $color-bg-input;
     line-height: 1.6;
     color: $color-text-primary;
@@ -313,6 +354,27 @@ watch(
     // Firefox scrollbar styling
     scrollbar-width: thin;
     scrollbar-color: $color-border-primary rgba(255, 255, 255, 0.1);
+}
+
+// Preview content styling
+.preview-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+}
+
+.preview-header {
+    flex-shrink: 0;
+    margin-bottom: 0.5rem;
+}
+
+.preview-title {
+    font-size: $font-size-lg;
+    font-weight: 600;
+    color: $color-text-primary;
+    line-height: 1.4;
+    word-wrap: break-word;
 }
 
 .keyboard-shortcuts {
@@ -354,41 +416,9 @@ watch(
     }
 }
 
-@media (max-width: 768px) {
-    .markdown-editor {
-        margin: 0;
-        border-radius: 0;
-        border-left: none;
-        border-right: none;
-    }
-
-    .mode-button {
-        padding: 0.625rem 1rem;
-        font-size: $font-size-sm-alt;
-    }
-
-    .input-section,
-    .output-section {
-        padding: 1rem;
-    }
-
-    .markdown-input {
-        height: 300px;
-        padding: 0.75rem;
-    }
-
-    .markdown-output {
-        min-height: 300px;
-        padding: 0.75rem;
-    }
-
-    .keyboard-shortcuts {
-        padding: 0.75rem 1rem;
-
-        ul {
-            grid-template-columns: 1fr;
-        }
-    }
+.edit-section,
+.preview-section {
+    overflow: hidden;
 }
 
 // Side by side layout styles
@@ -403,14 +433,14 @@ watch(
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
     min-height: 500px;
+    height: 100%;
 }
 
 .input-section--side,
 .output-section--side {
     display: flex;
     flex-direction: column;
-    height: 500px;
-    padding: 1rem;
+    height: 100%;
 
     .section-title {
         margin: 0 0 0.75rem 0;
@@ -419,6 +449,48 @@ watch(
         color: $color-text-primary;
         padding-bottom: 0.5rem;
         border-bottom: 1px solid $color-border-primary;
+    }
+}
+
+.edit-section {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .section-title {
+        margin: 0 0 0.75rem 0;
+        font-size: $font-size-base;
+        font-weight: 600;
+        color: $color-text-primary;
+        padding: 1rem 1rem 0.5rem 1rem;
+        border-bottom: 1px solid $color-border-primary;
+        background: $color-bg-overlay;
+    }
+
+    .input-section {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+.preview-section {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .section-title {
+        margin: 0 0 0.75rem 0;
+        font-size: $font-size-base;
+        font-weight: 600;
+        color: $color-text-primary;
+        padding: 1rem 1rem 0.5rem 1rem;
+        border-bottom: 1px solid $color-border-primary;
+        background: $color-bg-overlay;
+    }
+
+    .output-section--side {
+        flex: 1;
     }
 }
 

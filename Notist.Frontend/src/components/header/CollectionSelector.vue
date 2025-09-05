@@ -108,7 +108,7 @@ const selected = computed(() =>
         font-weight: 500 !important;
         cursor: pointer !important;
         min-width: 150px !important;
-        transition: all $transition-medium !important;
+        transition: all $transition-medium, border-radius 0s !important;
         backdrop-filter: $blur-light !important;
         box-shadow: $shadow-light !important;
 

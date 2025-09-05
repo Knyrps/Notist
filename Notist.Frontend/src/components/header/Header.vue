@@ -1,7 +1,25 @@
 <template>
-    <header id="header" class="header">
+    <header id="header" class="header drag-snap-down">
         <div class="header__block header__block--left">
-            <Nav text="Notist v1.0.0" />
+            <TitleNav
+                text="Notist"
+                title="Notist"
+                description="Lorem Ipsum Dolor Sit Amet"
+                :sections="[
+                    // {
+                    //     title: 'Controls',
+                    //     content:
+                    //         'Drag notes around the stage. Hover near the header to snap to top.',
+                    // },
+                    // {
+                    //     title: 'Controls',
+                    //     content:
+                    //         'Drag notes around the stage. Hover near the header to snap to top.',
+                    // },
+                ]"
+                version="v1.0.0"
+                author="developed with ❤️ by <a href='https://github.com/Knyrps/Notist'>@Knyrps</a>"
+            />
         </div>
         <div class="header__block header__block--center">
             <CollectionSelector
@@ -25,7 +43,7 @@
 </template>
 <script setup lang="ts">
 import CollectionSelector from "@/components/header/CollectionSelector.vue";
-import Nav from "@/components/header/Nav.vue";
+import TitleNav from "@/components/header/TitleNav.vue";
 import IconNav from "@/components/header/IconNav.vue";
 import QuitIconNav from "@/components/header/QuitIconNav.vue";
 import { faGear, faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -80,7 +98,7 @@ const quitApplication = async () => {
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
     background: $color-bg-transparent;
-    padding: 1rem;
+    padding: 0 1rem;
     box-sizing: border-box;
     z-index: $z-header;
 

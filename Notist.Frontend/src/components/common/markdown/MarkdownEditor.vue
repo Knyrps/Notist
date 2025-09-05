@@ -46,7 +46,10 @@
 
                 <!-- Preview mode -->
                 <div v-else class="output-section">
-                    <div class="markdown-output" v-html="markdown.html"></div>
+                    <div
+                        class="markdown-output md-out"
+                        v-html="markdown.html"
+                    ></div>
                 </div>
             </template>
 
@@ -69,7 +72,7 @@
                 <div class="output-section output-section--side">
                     <h3 class="section-title">Preview</h3>
                     <div
-                        class="markdown-output markdown-output--side"
+                        class="markdown-output markdown-output--side md-out"
                         v-html="markdown.html"
                     ></div>
                 </div>
@@ -254,34 +257,7 @@ watch(
     background: $color-bg-overlay;
     height: 400px;
     overflow-y: auto;
-    scrollbar-gutter: auto;
     box-sizing: border-box;
-
-    &::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background: $color-bg-secondary;
-        border-radius: $radius-secondary;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: $color-border-primary;
-        border-radius: $radius-secondary;
-        transition: all $transition-fast;
-
-        &:hover {
-            background: $color-border-hover;
-        }
-
-        &:active {
-            background: $color-accent-primary;
-        }
-    }
-
-    scrollbar-width: thin;
-    scrollbar-color: $color-border-primary $color-bg-secondary;
 }
 
 .markdown-input {
@@ -297,12 +273,6 @@ watch(
     outline: none;
     transition: all $transition-medium;
     box-sizing: border-box;
-
-    &:focus {
-        // border-color: $color-border-focus;
-        // box-shadow: $shadow-focus;
-        // background: $color-bg-active;
-    }
 
     &::placeholder {
         color: $color-text-disabled;
@@ -343,130 +313,6 @@ watch(
     // Firefox scrollbar styling
     scrollbar-width: thin;
     scrollbar-color: $color-border-primary rgba(255, 255, 255, 0.1);
-
-    // Style the rendered markdown content
-    :deep(h1),
-    :deep(h2),
-    :deep(h3),
-    :deep(h4),
-    :deep(h5),
-    :deep(h6) {
-        margin-top: 1.5em;
-        margin-bottom: 0.5em;
-        color: $color-text-primary;
-        font-weight: 600;
-    }
-
-    :deep(h1) {
-        border-bottom: 2px solid $color-border-primary;
-        padding-bottom: 0.3em;
-        font-size: $font-size-3xl;
-    }
-
-    :deep(h2) {
-        border-bottom: 1px solid $color-border-primary;
-        padding-bottom: 0.2em;
-        font-size: $font-size-2xl;
-    }
-
-    :deep(h3) {
-        font-size: $font-size-xl;
-    }
-    :deep(h4) {
-        font-size: $font-size-lg;
-    }
-    :deep(h5) {
-        font-size: $font-size-md;
-    }
-    :deep(h6) {
-        font-size: $font-size-base;
-    }
-
-    :deep(p) {
-        margin-bottom: 1em;
-        line-height: 1.7;
-    }
-
-    :deep(code) {
-        background: $color-accent-light;
-        border: 1px solid $color-accent-medium;
-        padding: 0.125rem 0.25rem;
-        border-radius: $radius-secondary;
-        font-family: "JetBrains Mono", "Courier New", monospace;
-        font-size: $font-size-code-inline;
-        color: $color-accent-primary-dark;
-    }
-
-    :deep(pre) {
-        background: $color-bg-secondary;
-        border: 1px solid $color-border-primary;
-        border-radius: $radius-secondary;
-        padding: 1rem;
-        overflow-x: auto;
-        margin: 1em 0;
-
-        code {
-            background: transparent;
-            border: none;
-            padding: 0;
-            color: $color-text-primary;
-        }
-    }
-
-    :deep(blockquote) {
-        border-left: 4px solid $color-accent-primary;
-        margin: 1em 0;
-        padding-left: 1rem;
-        color: $color-text-secondary;
-        background: $color-accent-light;
-        border-radius: 0 $radius-secondary $radius-secondary 0;
-        padding: 0.75rem 1rem;
-    }
-
-    :deep(ul),
-    :deep(ol) {
-        margin: 1em 0;
-        padding-left: 1.5rem;
-    }
-
-    :deep(li) {
-        margin-bottom: 0.25em;
-    }
-
-    :deep(a) {
-        color: $color-accent-primary;
-        text-decoration: none;
-        border-bottom: 1px solid transparent;
-        transition: all $transition-fast;
-
-        &:hover {
-            border-bottom-color: $color-accent-primary;
-        }
-    }
-
-    :deep(table) {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 1em 0;
-
-        th,
-        td {
-            border: 1px solid $color-border-primary;
-            padding: 0.5rem 0.75rem;
-            text-align: left;
-        }
-
-        th {
-            background: $color-bg-secondary;
-            font-weight: 600;
-        }
-    }
-
-    :deep(hr) {
-        border: none;
-        border-top: 2px solid $color-border-primary;
-        margin: 2em 0;
-    }
 }
 
 .keyboard-shortcuts {

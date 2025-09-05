@@ -31,7 +31,7 @@ const handleOverlayClick = () => {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "@/styles/variables";
 
 .window-overlay {

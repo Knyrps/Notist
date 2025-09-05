@@ -28,7 +28,7 @@
             </button>
         </div>
         <div class="note-separator"></div>
-        <div class="note-content" v-html="props.htmlContent"></div>
+        <div class="note-content md-out" v-html="props.htmlContent"></div>
     </div>
 </template>
 

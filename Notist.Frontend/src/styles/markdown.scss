@@ -1,0 +1,131 @@
+@import "variables";
+
+// Markdown output styling for all .md-out containers
+.md-out {
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin-top: 1.5em;
+        margin-bottom: 0.5em;
+        color: $color-text-primary;
+        font-weight: 600;
+    }
+
+    h1 {
+        border-bottom: 2px solid $color-border-primary;
+        padding-bottom: 0.3em;
+        font-size: $font-size-3xl;
+    }
+
+    h2 {
+        border-bottom: 1px solid $color-border-primary;
+        padding-bottom: 0.2em;
+        font-size: $font-size-2xl;
+    }
+
+    h3 {
+        font-size: $font-size-xl;
+    }
+
+    h4 {
+        font-size: $font-size-lg;
+    }
+
+    h5 {
+        font-size: $font-size-md;
+    }
+
+    h6 {
+        font-size: $font-size-base;
+    }
+
+    p {
+        margin-bottom: 1em;
+        line-height: 1.7;
+    }
+
+    code {
+        background: $color-accent-light;
+        border: 1px solid $color-accent-medium;
+        padding: 0.125rem 0.25rem;
+        border-radius: $radius-secondary;
+        font-family: "JetBrains Mono", "Courier New", monospace;
+        font-size: $font-size-code-inline;
+        color: $color-accent-primary-dark;
+    }
+
+    pre {
+        background: $color-bg-secondary;
+        border: 1px solid $color-border-primary;
+        border-radius: $radius-secondary;
+        padding: 1rem;
+        overflow-x: auto;
+        margin: 1em 0;
+
+        code {
+            background: transparent;
+            border: none;
+            padding: 0;
+            color: $color-text-primary;
+        }
+    }
+
+    blockquote {
+        border-left: 4px solid $color-accent-primary;
+        margin: 1em 0;
+        padding-left: 1rem;
+        color: $color-text-secondary;
+        background: $color-accent-light;
+        border-radius: 0 $radius-secondary $radius-secondary 0;
+        padding: 0.75rem 1rem;
+    }
+
+    ul,
+    ol {
+        margin: 1em 0;
+        padding-left: 1.5rem;
+    }
+
+    li {
+        margin-bottom: 0.25em;
+    }
+
+    a {
+        color: $color-accent-primary;
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+        transition: all $transition-fast;
+
+        &:hover {
+            border-bottom-color: $color-accent-primary;
+        }
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1em 0;
+
+        th,
+        td {
+            border: 1px solid $color-border-primary;
+            padding: 0.5rem 0.75rem;
+            text-align: left;
+        }
+
+        th {
+            background: $color-bg-secondary;
+            font-weight: 600;
+        }
+    }
+
+    hr {
+        border: none;
+        border-top: 2px solid $color-border-primary;
+        margin: 2em 0;
+    }
+}

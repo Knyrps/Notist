@@ -76,7 +76,6 @@ function handleClick(event: MouseEvent) {
     event.stopPropagation();
     emit("edit", props.note);
 }
-
 function handleSave(title: string, content: string) {
     emit("save", props.note.id, title, content);
 }
@@ -100,7 +99,11 @@ function handleCancel() {
     user-select: none;
     transition: all $transition-fast cubic-bezier(0.34, 1.56, 0.64, 1),
         top $transition-rapid cubic-bezier(0.34, 1.56, 0.64, 1),
-        left $transition-rapid cubic-bezier(0.34, 1.56, 0.64, 1);
+        left $transition-rapid cubic-bezier(0.34, 1.56, 0.64, 1),
+        height 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        min-height 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     box-shadow: $shadow-light;
     backdrop-filter: $blur-light;
     font-weight: 500;
@@ -116,6 +119,11 @@ function handleCancel() {
         box-shadow: $shadow-medium;
     }
 
+    &:active:not(&--editing):not(&--dragging) {
+        transform: translateY(-1px) scale(1.05);
+        transition: transform 0.1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
     &--editing {
         cursor: default;
         z-index: 1000;
@@ -127,8 +135,7 @@ function handleCancel() {
         padding: 0;
         background: $color-bg-secondary;
         border-color: $color-border-hover;
-        transform: translateY(-4px);
-        transition: all $transition-medium cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        transform: translateY(-4px) scale(1.02);
     }
 
     &--dragging {

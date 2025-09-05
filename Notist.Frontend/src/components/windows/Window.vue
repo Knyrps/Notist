@@ -67,12 +67,12 @@ const handleClose = async () => {
     overflow: visible;
     position: relative;
     z-index: 1;
-    width: 70%;
+    width: auto;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
     justify-content: flex-start;
-    height: 100%;
+    height: auto;
     overflow: hidden;
 
     &--slim {

@@ -2,7 +2,6 @@
     <Window
         title="Settings"
         width="slim"
-        height="large"
         :before-close="beforeClose"
         @close="onClose"
     >

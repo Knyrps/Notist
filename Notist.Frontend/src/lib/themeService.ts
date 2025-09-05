@@ -3,6 +3,10 @@
  * Handles theme switching and application to the document
  */
 
+// Import both highlight themes at build time to ensure they're bundled
+import lightThemeUrl from "@/styles/highlight-light.css?url";
+import darkThemeUrl from "@/styles/highlight-dark.css?url";
+
 export type ThemeMode = "Light" | "Dark" | "Auto";
 
 export interface ThemeOption {
@@ -18,6 +22,36 @@ export const THEME_OPTIONS: ThemeOption[] = [
 
 export class ThemeService {
     private static currentTheme: ThemeMode = "Auto";
+    private static highlightThemeLink: HTMLLinkElement | null = null;
+
+    /**
+     * Loads the appropriate highlight.js theme based on effective theme
+     */
+    private static loadHighlightTheme(): void {
+        // Remove existing highlight theme if any
+        if (ThemeService.highlightThemeLink) {
+            ThemeService.highlightThemeLink.remove();
+            ThemeService.highlightThemeLink = null;
+        }
+
+        const effectiveTheme = ThemeService.getEffectiveTheme();
+
+        // Use pre-imported URLs that are guaranteed to be correct after bundling
+        const themeUrl =
+            effectiveTheme === "Dark" ? darkThemeUrl : lightThemeUrl;
+
+        // Create new link element for highlight theme
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = themeUrl;
+        link.id = "highlight-theme";
+
+        // Add to document head
+        document.head.appendChild(link);
+        ThemeService.highlightThemeLink = link;
+
+        console.log("Highlight theme loaded:", effectiveTheme, themeUrl);
+    }
 
     /**
      * Applies the specified theme to the document
@@ -42,6 +76,9 @@ export class ThemeService {
                 console.warn("Unknown theme:", theme);
                 document.documentElement.setAttribute("data-theme", "auto");
         }
+
+        // Load appropriate highlight.js theme
+        ThemeService.loadHighlightTheme();
 
         console.log("Theme applied:", theme);
     }
@@ -77,6 +114,8 @@ export class ThemeService {
                 document.documentElement.removeAttribute("data-theme");
                 setTimeout(() => {
                     document.documentElement.setAttribute("data-theme", "auto");
+                    // Reload highlight theme for new system preference
+                    ThemeService.loadHighlightTheme();
                 }, 10);
             }
         });

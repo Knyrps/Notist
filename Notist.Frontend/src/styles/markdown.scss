@@ -60,7 +60,7 @@
         border-radius: $radius-secondary;
         font-family: "JetBrains Mono", "Courier New", monospace;
         font-size: $font-size-code-inline;
-        color: $color-accent-primary-dark;
+        // color: $color-accent-primary-dark;
     }
 
     pre {
@@ -75,7 +75,7 @@
             background: transparent;
             border: none;
             padding: 0;
-            color: $color-text-primary;
+            // color: $color-text-primary;
         }
     }
 

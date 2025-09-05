@@ -1,8 +1,32 @@
 import { ref } from "vue";
-import { marked } from "marked";
+import { Marked } from "marked";
+import { markedHighlight } from "marked-highlight";
+import hljs from "highlight.js";
 
 export type MarkdownData = {
     content: string;
+};
+
+const marked = new Marked(
+    markedHighlight({
+        emptyLangClass: "hljs",
+        langPrefix: "hljs language-",
+        highlight(code, lang) {
+            const language = hljs.getLanguage(lang) ? lang : "plaintext";
+            return hljs.highlight(code, { language }).value;
+        },
+    })
+);
+
+// Standalone function to convert markdown to HTML with syntax highlighting
+export const markdownToHtml = async (content: string): Promise<string> => {
+    try {
+        const result = marked.parse(content);
+        return typeof result === "string" ? result : await result;
+    } catch (error) {
+        console.error("Markdown parsing error:", error);
+        return content; // Fallback to raw content
+    }
 };
 
 type UseMarkdownReturn = {
@@ -28,14 +52,7 @@ export function useMarkdown(params: UseMarkdownParams = {}): UseMarkdownReturn {
 
     // Watch for changes in raw content and update HTML
     const updateHtml = async () => {
-        try {
-            const result = await marked(rawContent.value);
-            htmlContent.value =
-                typeof result === "string" ? result : await result;
-        } catch (error) {
-            console.error("Markdown parsing error:", error);
-            htmlContent.value = rawContent.value; // Fallback to raw content
-        }
+        htmlContent.value = await markdownToHtml(rawContent.value);
     };
 
     // Initial HTML generation
@@ -44,7 +61,6 @@ export function useMarkdown(params: UseMarkdownParams = {}): UseMarkdownReturn {
     // Update content method
     const updateContent = (content: string) => {
         rawContent.value = content;
-        // Don't await here to keep the function synchronous, but handle the async update
         updateHtml().catch(console.error);
     };
 

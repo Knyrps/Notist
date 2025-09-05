@@ -1,16 +1,6 @@
 import { ref, readonly, computed } from "vue";
-import { marked } from "marked";
+import { markdownToHtml } from "./markdown/markdownService";
 import type { Note, Position } from "@/types/note";
-
-// Helper function to convert markdown to HTML
-const markdownToHtml = async (content: string): Promise<string> => {
-    try {
-        return await marked(content);
-    } catch (error) {
-        console.error("Error converting markdown to HTML:", error);
-        return content; // Return original content on error
-    }
-};
 
 // Global note state
 const notes = ref<Note[]>([
@@ -19,8 +9,7 @@ const notes = ref<Note[]>([
         title: "First Note",
         content:
             "This is **bold text** and *italic text* in the first note.\n\n- List item 1\n- List item 2",
-        htmlContent:
-            "<p>This is <strong>bold text</strong> and <em>italic text</em> in the first note.</p>\n<ul>\n<li>List item 1</li>\n<li>List item 2</li>\n</ul>",
+        htmlContent: "",
         position: { x: 50, y: 50 },
         isDragging: false,
         isEditing: false,
@@ -31,8 +20,7 @@ const notes = ref<Note[]>([
         title: "Second Note",
         content:
             "## Heading 2\n\nThis is a `code snippet` in the second note.\n\n> This is a blockquote",
-        htmlContent:
-            "<h2>Heading 2</h2>\n<p>This is a <code>code snippet</code> in the second note.</p>\n<blockquote>\n<p>This is a blockquote</p>\n</blockquote>",
+        htmlContent: "",
         position: { x: 150, y: 100 },
         isDragging: false,
         isEditing: false,
@@ -42,9 +30,8 @@ const notes = ref<Note[]>([
         id: "note-3",
         title: "Third Note",
         content:
-            "### Links and formatting\n\nCheck out [this link](https://example.com)!\n\n```javascript\nconst hello = 'world';\n```",
-        htmlContent:
-            '<h3>Links and formatting</h3>\n<p>Check out <a href="https://example.com">this link</a>!</p>\n<pre><code class="language-javascript">const hello = \'world\';\n</code></pre>',
+            '### Links and formatting\n\nCheck out [this link](https://example.com)!\n\n```csharp\nStringBuilder x = new StringBuilder();\n\nusing (var sr = new StreamReader()) {\n    System.Console.WriteLine("hello")\n}\n```',
+        htmlContent: "",
         position: { x: 250, y: 150 },
         isDragging: false,
         isEditing: false,
@@ -53,6 +40,18 @@ const notes = ref<Note[]>([
 ]);
 
 const maxZIndex = ref(3);
+
+// Initialize HTML content for existing notes
+const initializeNotes = async () => {
+    for (const note of notes.value) {
+        if (!note.htmlContent) {
+            note.htmlContent = await markdownToHtml(note.content);
+        }
+    }
+};
+
+// Initialize on module load
+initializeNotes();
 
 export function useNotes() {
     // Computed values

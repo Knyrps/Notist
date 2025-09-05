@@ -13,6 +13,11 @@
         margin-bottom: 0.5em;
         color: $color-text-primary;
         font-weight: 600;
+
+        // Reduce top margin for first heading in container
+        &:first-child {
+            margin-top: 0.5em; // One third of 1.5em
+        }
     }
 
     h1 {
@@ -77,11 +82,10 @@
     blockquote {
         border-left: 4px solid $color-accent-primary;
         margin: 1em 0;
-        padding-left: 1rem;
         color: $color-text-secondary;
         background: $color-accent-light;
         border-radius: 0 $radius-secondary $radius-secondary 0;
-        padding: 0.75rem 1rem;
+        padding: 0.25rem .5rem 0.25rem 1rem;
     }
 
     ul,

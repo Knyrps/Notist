@@ -1,5 +1,11 @@
 <template>
-    <Window title="Settings" :before-close="beforeClose" @close="onClose">
+    <Window
+        title="Settings"
+        width="slim"
+        height="large"
+        :before-close="beforeClose"
+        @close="onClose"
+    >
         <div v-if="loading" class="loading-state">
             <p>Loading settings...</p>
         </div>

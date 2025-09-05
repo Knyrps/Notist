@@ -7,6 +7,7 @@ export interface Note {
     id: string;
     title: string;
     content: string;
+    htmlContent: string;
     position: Position;
     isDragging: boolean;
     isEditing?: boolean;

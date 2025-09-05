@@ -8,7 +8,7 @@
         ref="stageRef"
     >
         <NoteComponent
-            v-for="note in notes"
+            v-for="note in allNotes"
             :key="note.id"
             :note="note"
             @dragstart="handleDragStart"
@@ -24,57 +24,27 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 import NoteComponent from "@/components/notes/Note.vue";
+import { useNotes } from "@/lib/useNotes";
 import type { Position, Note, DragData } from "@/types/note";
+
+// Use the notes composable
+const {
+    allNotes,
+    updateNote,
+    setNotePosition,
+    setNoteDragging,
+    setNoteEditing,
+    bringNoteToFront,
+    closeAllEditing,
+    createNote,
+} = useNotes();
 
 // Reactive data
 const stageRef = ref<HTMLElement>();
-const notes = ref<Note[]>([
-    {
-        id: "note-1",
-        title: "First Note",
-        content: "This is the content of the first note",
-        position: { x: 50, y: 50 },
-        isDragging: false,
-        isEditing: false,
-        zIndex: 1,
-    },
-    {
-        id: "note-2",
-        title: "Second Note",
-        content: "This is the content of the second note",
-        position: { x: 150, y: 100 },
-        isDragging: false,
-        isEditing: false,
-        zIndex: 2,
-    },
-    {
-        id: "note-3",
-        title: "Third Note",
-        content: "This is the content of the third note",
-        position: { x: 250, y: 150 },
-        isDragging: false,
-        isEditing: false,
-        zIndex: 3,
-    },
-]);
 
 // Drag state
 const dragData = ref<DragData | null>(null);
 const isHoveringHeader = ref(false);
-
-// Note stacking system
-function bringNoteToFront(noteId: string) {
-    const note = notes.value.find((n) => n.id === noteId);
-    if (!note) return;
-
-    // Get the current highest z-index
-    const maxZIndex = Math.max(...notes.value.map((n) => n.zIndex));
-
-    // Only update if this note isn't already on top
-    if (note.zIndex < maxZIndex) {
-        note.zIndex = maxZIndex + 1;
-    }
-}
 
 // Drag handlers
 function handleDragStart(note: Note, event: DragEvent) {
@@ -83,7 +53,7 @@ function handleDragStart(note: Note, event: DragEvent) {
     // Bring the dragged note to front
     bringNoteToFront(note.id);
 
-    note.isDragging = true;
+    setNoteDragging(note.id, true);
 
     const rect = (event.target as HTMLElement).getBoundingClientRect();
     const offset: Position = {
@@ -106,7 +76,7 @@ function handleDragStart(note: Note, event: DragEvent) {
 }
 
 function handleDragEnd(note: Note) {
-    note.isDragging = false;
+    setNoteDragging(note.id, false);
     dragData.value = null;
     isHoveringHeader.value = false;
     stageRef.value?.classList.remove("stage--isdragging");
@@ -137,7 +107,7 @@ function handleDrop(event: DragEvent) {
         const data: DragData = JSON.parse(
             event.dataTransfer.getData("application/json")
         );
-        const note = notes.value.find((n) => n.id === data.noteId);
+        const note = allNotes.value.find((n) => n.id === data.noteId);
 
         if (!note) return;
 
@@ -166,8 +136,8 @@ function handleDrop(event: DragEvent) {
             }
         }
 
-        note.position = newPosition;
-        note.isDragging = false;
+        setNotePosition(note.id, newPosition);
+        setNoteDragging(note.id, false);
 
         // Reset header hover state
         isHoveringHeader.value = false;
@@ -197,9 +167,11 @@ function handleGlobalDrop(event: DragEvent) {
     if (!isDroppable && dragData.value) {
         event.preventDefault();
         // Reset note position if dropped outside stage
-        const note = notes.value.find((n) => n.id === dragData.value?.noteId);
+        const note = allNotes.value.find(
+            (n) => n.id === dragData.value?.noteId
+        );
         if (note) {
-            note.isDragging = false;
+            setNoteDragging(note.id, false);
         }
     }
 }
@@ -209,44 +181,28 @@ function handleNoteEdit(note: Note) {
     // Bring the edited note to front
     bringNoteToFront(note.id);
 
-    // Close any other editing notes
-    notes.value.forEach((n) => {
-        if (n.id !== note.id) {
-            n.isEditing = false;
-        }
-    });
-
-    // Open editing mode for this note
-    note.isEditing = true;
+    // Set this note to editing mode (composable will close others)
+    setNoteEditing(note.id, true);
 }
 
 function handleNoteFocus(note: Note) {
     // Bring the focused note to front
     bringNoteToFront(note.id);
 }
-function handleNoteSave(noteId: string, title: string, content: string) {
-    const note = notes.value.find((n) => n.id === noteId);
-    if (note) {
-        note.title = title;
-        note.content = content;
-        note.isEditing = false;
-    }
+
+async function handleNoteSave(noteId: string, title: string, content: string) {
+    await updateNote(noteId, title, content);
 }
 
 function handleNoteCancel(noteId: string) {
-    const note = notes.value.find((n) => n.id === noteId);
-    if (note) {
-        note.isEditing = false;
-    }
+    setNoteEditing(noteId, false);
 }
 
 function handleStageClick(event: MouseEvent) {
     // Close all editing modes when clicking on the stage
     const target = event.target as HTMLElement;
     if (target === stageRef.value) {
-        notes.value.forEach((note) => {
-            note.isEditing = false;
-        });
+        closeAllEditing();
     }
 }
 

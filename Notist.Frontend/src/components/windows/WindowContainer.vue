@@ -10,6 +10,10 @@
                     v-if="isWindowActive('settings')"
                     @close="closeWindow"
                 />
+                <EditNoteWindow
+                    v-if="isWindowActive('editNote')"
+                    @close="closeWindow"
+                />
             </div>
         </div>
     </Teleport>
@@ -18,6 +22,7 @@
 <script setup lang="ts">
 import { useWindowManager } from "@/lib/windowManager";
 import SettingsWindow from "@/components/windows/settings/SettingsWindow.vue";
+import EditNoteWindow from "@/components/windows/EditNoteWindow.vue";
 
 const { isWindowOpen, closeWindow, isWindowActive } = useWindowManager();
 
@@ -49,5 +54,10 @@ const handleOverlayClick = () => {
     max-width: 90vw;
     max-height: 90vh;
     overflow: auto;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 </style>

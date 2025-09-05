@@ -64,3 +64,17 @@ $transition-medium: 0.2s ease;
 // Z-Index
 $z-header: 1000;
 $z-dropdown: 1100;
+
+// Font Sizes
+$font-size-xs: 0.7rem; // Extra small (mobile buttons)
+$font-size-sm: 0.75rem; // Small (kbd elements)
+$font-size-sm-alt: 0.8rem; // Small alternative (mobile text)
+$font-size-base: 0.875rem; // Base font size (buttons, inputs)
+$font-size-md: 1rem; // Medium (h5, body text)
+$font-size-lg: 1.125rem; // Large (h4)
+$font-size-xl: 1.25rem; // Extra large (h3)
+$font-size-2xl: 1.5rem; // 2x large (h2)
+$font-size-3xl: 1.875rem; // 3x large (h1)
+
+// Relative font sizes (for contextual sizing)
+$font-size-code-inline: 0.875em; // Relative to parent for inline code

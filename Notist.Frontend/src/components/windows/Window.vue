@@ -1,5 +1,12 @@
 <template>
-    <div class="window">
+    <div
+        class="window"
+        :class="
+            (width ? `window--${width}` : '') +
+            ' ' +
+            (height ? `window--${height}` : '')
+        "
+    >
         <div class="window-header">
             <h2 class="window-title">{{ title }}</h2>
             <button class="close-button" @click="handleClose" title="Close">
@@ -22,6 +29,8 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 const props = defineProps<{
+    width?: "slim" | "wide";
+    height?: "small" | "large";
     title: string;
     beforeClose?: () => boolean | Promise<boolean>;
 }>();
@@ -54,11 +63,33 @@ const handleClose = async () => {
     border-radius: $radius-primary;
     box-shadow: $shadow-strong;
     backdrop-filter: $blur-strong;
-    width: 500px;
     max-width: 100%;
     overflow: visible;
     position: relative;
     z-index: 1;
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    justify-content: flex-start;
+    height: 100%;
+    overflow: hidden;
+
+    &--slim {
+        width: min(500px, 50%);
+    }
+
+    &--wide {
+        width: max(1200px, 100%);
+    }
+
+    &--small {
+        height: min(450px, 60%);
+    }
+
+    &--large {
+        height: 100%;
+    }
 }
 
 .window-header {
@@ -109,10 +140,12 @@ const handleClose = async () => {
 
 .window-content {
     padding: 1.5rem;
-    max-height: 60vh;
     overflow-y: auto;
     position: relative;
     z-index: 1;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .window-footer {

@@ -21,7 +21,9 @@
         <NoteContent
             :title="note.title"
             :content="note.content"
+            :htmlContent="note.htmlContent"
             :isEditing="note.isEditing"
+            :noteId="note.id"
             @save="handleSave"
             @cancel="handleCancel"
         />
@@ -116,14 +118,17 @@ function handleCancel() {
 
     &--editing {
         cursor: default;
-        transform: scale(1.5) !important;
         z-index: 1000;
         box-shadow: $shadow-strong;
         height: auto;
-        width: 400px;
+        min-height: 300px;
+        width: 500px;
+        max-width: 90vw;
         padding: 0;
         background: $color-bg-secondary;
         border-color: $color-border-hover;
+        transform: translateY(-4px);
+        transition: all $transition-medium cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     &--dragging {
